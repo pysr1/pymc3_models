@@ -15,7 +15,7 @@ class LinearRegression(BayesianModel):
 
     def __init__(self, sd = 2.5):
         super(LinearRegression, self).__init__()
-        self.sd
+        self.sd = sd
         
     def create_model(self):
         """
