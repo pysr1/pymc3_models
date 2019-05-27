@@ -13,8 +13,8 @@ class LinearRegression(BayesianModel):
     Linear Regression built using PyMC3.
     """
 
-    def __init__(self):
-        super(LinearRegression, self, sd = 2.5).__init__()
+    def __init__(self, sd = 2.5):
+        super(LinearRegression, self).__init__()
 
     def create_model(self):
         """
