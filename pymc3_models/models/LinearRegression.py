@@ -92,6 +92,16 @@ class LinearRegression(BayesianModel):
             arguments to be passed to the inference methods.
             Check the PyMC3 docs for permissable values.
             If None, default values will be set.
+        
+        scale : int or 'auto' (defaults to 'auto')
+            The scale for the T-distribution. When set to
+            default 'auto', scale = 2.5 * sd(y) just like 
+            in Rstanarm
+        
+        dof : int (defaults to 7)
+            The degrees of free for the T-distribution.
+
+
         """
         self.num_training_samples, self.num_pred = X.shape
 
