@@ -14,7 +14,7 @@ class LinearRegression(BayesianModel):
     """
 
     def __init__(self):
-        super(LinearRegression, self).__init__()
+        super(LinearRegression, self, sd = 2.5).__init__()
 
     def create_model(self):
         """
@@ -40,9 +40,11 @@ class LinearRegression(BayesianModel):
         model = pm.Model()
 
         with model:
-            alpha = pm.Normal('alpha', mu=0, sd=100, shape=(1))
-            betas = pm.Normal('betas', mu=0, sd=100, shape=(1, self.num_pred))
+            alpha = pm.StudentT('intercept', mu=0, sigma=sd, nu = 7, shape=(1))
+            betas = pm.StudentT('coefficients', mu=0, sigma=sd, nu = 7, shape=(1, self.num_pred))
 
+            
+            
             s = pm.HalfNormal('s', tau=1)
 
             mean = alpha + T.sum(betas * model_input, 1)
