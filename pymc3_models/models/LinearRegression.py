@@ -15,7 +15,8 @@ class LinearRegression(BayesianModel):
 
     def __init__(self, sd = 2.5):
         super(LinearRegression, self).__init__()
-
+        self.sd
+        
     def create_model(self):
         """
         Creates and returns the PyMC3 model.
@@ -40,8 +41,8 @@ class LinearRegression(BayesianModel):
         model = pm.Model()
 
         with model:
-            alpha = pm.StudentT('intercept', mu=0, sigma=sd, nu = 7, shape=(1))
-            betas = pm.StudentT('coefficients', mu=0, sigma=sd, nu = 7, shape=(1, self.num_pred))
+            alpha = pm.StudentT('intercept', mu=0, sigma=self.sd, nu = 7, shape=(1))
+            betas = pm.StudentT('coefficients', mu=0, sigma=self.sd, nu = 7, shape=(1, self.num_pred))
 
             
             
