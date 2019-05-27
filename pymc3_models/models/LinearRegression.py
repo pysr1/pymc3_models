@@ -13,11 +13,11 @@ class LinearRegression(BayesianModel):
     Linear Regression built using PyMC3.
     """
 
-    def __init__(self, sd = 2.5):
+    def __init__(self):
         super(LinearRegression, self).__init__()
-        self.sd = sd
         
-    def create_model(self):
+        
+    def create_model(self, sd, dof):
         """
         Creates and returns the PyMC3 model.
 
@@ -41,8 +41,8 @@ class LinearRegression(BayesianModel):
         model = pm.Model()
 
         with model:
-            alpha = pm.StudentT('intercept', mu=0, sigma=self.sd, nu = 7, shape=(1))
-            betas = pm.StudentT('coefficients', mu=0, sigma=self.sd, nu = 7, shape=(1, self.num_pred))
+            alpha = pm.StudentT('intercept', mu=0, sd=sd, nu = 7, shape=(1))
+            betas = pm.StudentT('coefficients', mu=0, sd=sd, nu = 7, shape=(1, self.num_pred))
 
             
             
@@ -62,6 +62,8 @@ class LinearRegression(BayesianModel):
         num_advi_sample_draws=10000,
         minibatch_size=None,
         inference_args=None,
+        scale = 'auto',
+        dof = 7
     ):
         """
         Train the Linear Regression model
@@ -102,8 +104,10 @@ class LinearRegression(BayesianModel):
             inference_args = self._set_default_inference_args()
 
         if self.cached_model is None:
-            self.cached_model = self.create_model()
-
+            if scale == 'auto':
+                self.cached_model = self.create_model(sd = 2.5 * np.std(y), dof = dof)
+            else:
+                self.cached_model = self.create_model(sd = scale, dof = dof)
         if minibatch_size:
             with self.cached_model:
                 minibatches = {
