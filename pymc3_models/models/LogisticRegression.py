@@ -16,7 +16,7 @@ class LogisticRegression(BayesianModel):
     def __init__(self):
         super(LogisticRegression, self).__init__()
 
-    def create_model(self):
+    def create_model(self, sd, dof):
         """
         Creates and returns the PyMC3 model.
 
@@ -40,8 +40,8 @@ class LogisticRegression(BayesianModel):
         model = pm.Model()
 
         with model:
-            alpha = pm.Normal('alpha', mu=0, sd=100, shape=(1))
-            betas = pm.Normal('betas', mu=0, sd=100, shape=(1, self.num_pred))
+            alpha = pm.StudentT('alpha', mu=0, sd=sd, nu = dof, shape=(1))
+            betas = pm.StudentT('betas', mu=0, sd=sd,nu = dof, shape=(1, self.num_pred))
 
             temp = alpha + T.sum(betas * model_input, 1)
 
@@ -58,7 +58,11 @@ class LogisticRegression(BayesianModel):
         inference_type='advi',
         num_advi_sample_draws=10000,
         minibatch_size=None,
-        inference_args=None
+        inference_args=None,
+        scale=2.5,
+        dof = 7
+
+
     ):
         """
         Train the Logistic Regression model
@@ -99,7 +103,7 @@ class LogisticRegression(BayesianModel):
             inference_args = self._set_default_inference_args()
 
         if self.cached_model is None:
-            self.cached_model = self.create_model()
+            self.cached_model = self.create_model(sd = scale, dof = dof)
 
         if minibatch_size:
             with self.cached_model:
@@ -114,7 +118,9 @@ class LogisticRegression(BayesianModel):
 
         self._inference(inference_type, inference_args, num_advi_sample_draws=num_advi_sample_draws)
 
-        return self
+        # this is really annoying I won't completely remove it yet
+        # a method should not return an instance of the object 
+        #return self
 
     def predict_proba(self, X, return_std=False, num_ppc_samples=2000):
         """
