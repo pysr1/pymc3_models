@@ -162,9 +162,9 @@ class LinearRegression(BayesianModel):
         ppc = pm.sample_ppc(self.trace, model=self.cached_model, samples=num_ppc_samples)
 
         if return_std:
-            return ppc['y'].median(axis=0), ppc['y'].std(axis=0)
+            return ppc['y'].mean(axis=0), ppc['y'].std(axis=0)
         else:
-            return ppc['y'].median(axis=0)
+            return ppc['y'].mean(axis=0)
 
     def score(self, X, y, num_ppc_samples=2000):
         """
